@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cBot Showcase</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* ---------- Theme tokens ---------- */
+:root {
+  --bg: #ffffff;
+  --surface: #f4f6f9;
+  --surface-2: #e9edf3;
+  --line: #d9dfe8;
+  --text: #14202e;
+  --muted: #5d6b7e;
+  --accent: #0b5fa5;
+  --accent-ink: #ffffff;
+  --accent-soft: #e4effa;
+  --promo: #b4531c;
+  --promo-soft: #fbeee4;
+  --star: #d9a21b;
+  --radius: 10px;
+  --shadow: 0 1px 2px rgba(20,32,46,.06), 0 6px 18px -8px rgba(20,32,46,.18);
+  --font: "IBM Plex Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1520;
+    --surface: #171f2b;
+    --surface-2: #1f2937;
+    --line: #2b3646;
+    --text: #e8edf4;
+    --muted: #94a2b5;
+    --accent: #6cb0f6;
+    --accent-ink: #0b1622;
+    --accent-soft: #1b2d42;
+    --promo: #f0a070;
+    --promo-soft: #3a2519;
+    --star: #f0c24c;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 20px -8px rgba(0,0,0,.6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1520;
+  --surface: #171f2b;
+  --surface-2: #1f2937;
+  --line: #2b3646;
+  --text: #e8edf4;
+  --muted: #94a2b5;
+  --accent: #6cb0f6;
+  --accent-ink: #0b1622;
+  --accent-soft: #1b2d42;
+  --promo: #f0a070;
+  --promo-soft: #3a2519;
+  --star: #f0c24c;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 20px -8px rgba(0,0,0,.6);
+  color-scheme: dark;
+}
+:root[data-transparent="1"] { --bg: transparent; }
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+.widget { padding: 16px; max-width: 1240px; margin: 0 auto; }
+
+/* ---------- Header ---------- */
+.head {
+  display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
+  gap: 12px 20px; margin-bottom: 14px;
+}
+.head h1 { font-size: 20px; font-weight: 600; margin: 0; line-height: 1.2; text-wrap: balance; }
+.head p { margin: 4px 0 0; color: var(--muted); }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.search {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px;
+  min-width: 180px;
+}
+.search svg { width: 14px; height: 14px; color: var(--muted); flex: none; }
+.search input { border: 0; background: transparent; outline: 0; width: 100%; min-width: 0; }
+.search input::placeholder { color: var(--muted); }
+select.sort {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 6px 28px 6px 10px;
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' fill='none' stroke='%235d6b7e' stroke-width='1.5'/></svg>");
+  background-repeat: no-repeat; background-position: right 10px center;
+  cursor: pointer;
+}
+
+/* ---------- Filter chips ---------- */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.chip {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 999px;
+  padding: 4px 11px; font-size: 12.5px; cursor: pointer; color: var(--muted);
+  transition: background .15s, color .15s, border-color .15s;
+}
+.chip:hover { color: var(--text); border-color: var(--muted); }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.chip .n { opacity: .7; margin-left: 4px; font-variant-numeric: tabular-nums; }
+
+/* ---------- Grid / list ---------- */
+.grid {
+  display: grid; gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
+}
+.grid[data-layout="list"] { grid-template-columns: 1fr; }
+.empty { color: var(--muted); padding: 32px 0; text-align: center; }
+
+/* ---------- Card ---------- */
+.card {
+  position: relative;
+  display: flex; flex-direction: column; gap: 10px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 14px; min-width: 0;
+  transition: transform .15s, box-shadow .15s, border-color .15s;
+}
+.card:hover { transform: translateY(-1px); box-shadow: var(--shadow); border-color: var(--muted); }
+.card.featured { border-color: var(--accent); }
+.card .top { display: flex; gap: 12px; align-items: flex-start; }
+.logo {
+  position: relative; width: 52px; height: 52px; border-radius: 8px; flex: none; overflow: hidden;
+  background: var(--accent-soft); border: 1px solid var(--line);
+  display: grid; place-items: center;
+}
+.logo::before { content: attr(data-initials); font-family: var(--mono); font-weight: 600; font-size: 15px; color: var(--accent); letter-spacing: .02em; }
+.logo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: var(--surface-2); }
+.title { min-width: 0; flex: 1; }
+.title h2 {
+  margin: 0; font-size: 15px; font-weight: 600; line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+.title h2 a { text-decoration: none; }
+.title h2 a::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius); }
+.title .by { color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+.badge {
+  display: inline-block; font-size: 10.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+  background: var(--accent-soft); color: var(--accent); border-radius: 4px; padding: 2px 6px; margin-right: 6px; vertical-align: middle;
+}
+.meta { display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: var(--muted); flex-wrap: wrap; }
+.stars { display: inline-flex; gap: 1px; color: var(--star); }
+.stars svg { width: 12px; height: 12px; }
+.stars .off { color: var(--line); }
+.meta b { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+.stat { font-variant-numeric: tabular-nums; }
+.stat b { font-family: var(--mono); font-weight: 500; }
+.summary {
+  margin: 0; color: var(--muted); font-size: 13px;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.tag { font-size: 11.5px; color: var(--muted); background: var(--surface-2); border-radius: 4px; padding: 2px 6px; }
+.bottom { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 4px; }
+.price { font-family: var(--mono); font-size: 16px; font-weight: 600; display: flex; align-items: baseline; gap: 8px; font-variant-numeric: tabular-nums; }
+.price s { color: var(--muted); font-size: 12.5px; font-weight: 500; }
+.price .free { color: var(--accent); }
+.price .off { font-family: var(--font); font-size: 11px; font-weight: 600; color: var(--promo); background: var(--promo-soft); border-radius: 4px; padding: 1px 5px; }
+.cta {
+  position: relative; z-index: 1;
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--accent); color: var(--accent-ink); text-decoration: none;
+  border-radius: 7px; padding: 7px 12px; font-size: 13px; font-weight: 600; white-space: nowrap;
+  transition: filter .15s;
+}
+.cta:hover { filter: brightness(1.08); }
+.cta svg { width: 12px; height: 12px; }
+
+/* list layout overrides */
+.grid[data-layout="list"] .card { flex-direction: row; align-items: center; flex-wrap: wrap; }
+.grid[data-layout="list"] .top { flex: 1 1 260px; }
+.grid[data-layout="list"] .summary { flex: 2 1 320px; -webkit-line-clamp: 2; }
+.grid[data-layout="list"] .tags { display: none; }
+.grid[data-layout="list"] .bottom { margin: 0; flex: 0 0 auto; }
+.grid[data-layout="list"] .meta { flex: 1 1 100%; order: 10; }
+
+.foot { margin-top: 14px; font-size: 11.5px; color: var(--muted); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.foot a { color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="widget" id="app">
+  <header class="head">
+    <div>
+      <h1 id="title">cBots we recommend</h1>
+      <p id="subtitle">Hand-picked trading robots from cTrader Store</p>
+    </div>
+    <div class="controls">
+      <label class="search">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+        <input id="q" type="search" placeholder="Search bots, symbols, tags" aria-label="Search">
+      </label>
+      <select class="sort" id="sort" aria-label="Sort">
+        <option value="featured">Featured first</option>
+        <option value="rating">Highest rated</option>
+        <option value="price-asc">Price: low to high</option>
+        <option value="price-desc">Price: high to low</option>
+        <option value="name">Name A–Z</option>
+      </select>
+    </div>
+  </header>
+  <nav class="chips" id="chips" aria-label="Filter by market"></nav>
+  <section class="grid" id="grid" aria-live="polite"></section>
+  <footer class="foot">
+    <span id="count"></span>
+    <span>Prices and ratings as of <span id="updated"></span> · Sold via <a href="https://ctrader.com/store" target="_blank" rel="noopener">cTrader Store</a></span>
+  </footer>
+</div>
+
+<!-- Fallback data: used only if products.json cannot be fetched (e.g. opened as a local file) -->
+<script id="products-data" type="application/json">{"meta":{"title":"cBots we recommend","subtitle":"Hand-picked trading robots from cTrader Store","currency":"USD","updated":"2026-09-09"},"products":[{"id":4734,"name":"TALON Gold Scalper","type":"cBot","seller":"eusebiul","url":"https://ctrader.com/products/4734","image":"https://cdn.ctrader.com/image/webp/5ce8e7c3-3178-416e-9893-7f057d7f6c72_53435","price":149,"promoPrice":79,"rating":5.0,"reviews":3,"market":"Gold","tags":["XAUUSD","Scalping","Trend","No martingale"],"summary":"Nine independent modules with multi-timeframe analysis for XAUUSD. Fixed stop loss, dynamic trailing stop, Friday protection.","stats":{"profitFactor":3.96,"maxDrawdown":"6.3%"},"featured":true},{"id":3812,"name":"True Scalper AI v4.0","type":"cBot","seller":"Labot","url":"https://ctrader.com/products/3812","image":"https://cdn.ctrader.com/image/webp/4eaf0e58-e77c-43c6-b043-fa4ef9a29ee3_42166","price":238,"promoPrice":119,"rating":5.0,"reviews":4,"market":"Multi-asset","tags":["AI","Scalping","Forex","Indices","Prop firm ready"],"summary":"Multi-asset AI scalper with multi-timeframe confirmation, risk controls and a real-time dashboard.","stats":{}},{"id":315,"name":"DragonGoldEAProNet6","type":"cBot","seller":"nghiand.amz","url":"https://ctrader.com/products/315","image":"https://cdn.ctrader.com/image/webp/92048549-05e0-405a-bbf3-5e810b3e66b4_26057","price":199,"promoPrice":null,"rating":4.0,"reviews":1,"market":"Gold","tags":["XAUUSD","Grid","Martingale"],"summary":"Grid and martingale robot for XAUUSD with money-management controls.","stats":{}},{"id":257,"name":"DragonScalpingProV2","type":"cBot","seller":"nghiand.amz","url":"https://ctrader.com/products/257","image":"https://cdn.ctrader.com/image/webp/23c864d3-b4a1-413e-b4a3-ab1dd325c138_25823","price":199,"promoPrice":null,"rating":3.7,"reviews":4,"market":"Forex","tags":["EURUSD","GBPUSD","USDJPY","Scalping","Grid"],"summary":"Short-term forex scalper using momentum and RSI filters with grid/martingale volume management.","stats":{}},{"id":3619,"name":"AI GOLD cBOT","type":"cBot","seller":"TradingGenius","url":"https://ctrader.com/products/3619","image":"https://cdn.ctrader.com/image/webp/235e7ff0-8c0e-4818-bd02-b52b251e6721_41180","price":299,"promoPrice":199,"rating":4.5,"reviews":4,"market":"Gold","tags":["XAUUSD","AI","Automated"],"summary":"Gold-only robot using AI-driven market analysis to pick high-probability entries.","stats":{"profitFactor":3.66,"maxDrawdown":"5.25%"}},{"id":2149,"name":"Fx4U.XAUUSD.v2.6.10","type":"cBot","seller":"Fx4U.net","url":"https://ctrader.com/products/2149","image":"https://cdn.ctrader.com/image/webp/e5c7a9e5-687d-4fc0-aa90-89cd50f272b7_33703","price":390,"promoPrice":199,"rating":4.6,"reviews":3,"market":"Gold","tags":["XAUUSD","Price action","M1","No martingale"],"summary":"M1 price-action bot for Gold with strict risk management and no martingale.","stats":{"profitFactor":1.37,"maxDrawdown":"24.7%"}},{"id":4119,"name":"MonsterHunt NAS100 2.9.4V","type":"cBot","seller":"MonsterForex","url":"https://ctrader.com/products/4119","image":"https://cdn.ctrader.com/image/webp/0e0a691a-27e8-4628-b15e-f53c3345c4bc_45307","price":130,"promoPrice":100,"rating":4.0,"reviews":4,"market":"Indices","tags":["NAS100","M5","Trend","Prop firm fit"],"summary":"NAS100 day-trading bot: higher-timeframe direction filter, regime check and multi-layer entry confirmation.","stats":{}},{"id":3026,"name":"ALPHA RAZER US30 v3.0","type":"cBot","seller":"WilfredNdobe","url":"https://ctrader.com/products/3026","image":"https://cdn.ctrader.com/image/webp/b8a3d7cb-8513-4119-86d0-e3b6237bcd75_37824","price":399,"promoPrice":200,"rating":4.7,"reviews":4,"market":"Indices","tags":["US30","M15","SMC","Heikin Ashi"],"summary":"US30 bot on 15-minute Heikin Ashi charts, combining ICT/SMC concepts with classic indicators.","stats":{}},{"id":3568,"name":"UNO GOLDEN DRAGON PRO","type":"cBot","seller":"UnoTrader","url":"https://ctrader.com/products/3568","image":"https://cdn.ctrader.com/image/webp/82cf9442-d194-45bb-9ed1-3f157d1a3d01_52567","price":319,"promoPrice":249,"rating":4.6,"reviews":5,"market":"Multi-asset","tags":["XAUUSD","Forex","Crypto","Grid","Cloud"],"summary":"Cloud-optimised multi-level grid suite with adaptive SMA anchor and volatility filters.","stats":{}},{"id":3004,"name":"Precision Scalper COD","type":"cBot","seller":"Goulart","url":"https://ctrader.com/products/3004","image":"https://cdn.ctrader.com/image/webp/b23b4bc9-4d4a-4c5b-9a47-70eb5a241c19_37708","price":900,"promoPrice":590,"rating":4.0,"reviews":2,"market":"Gold","tags":["XAUUSD","BTCUSD","EMA","Scalping"],"summary":"Multi-layer EMA trend system for XAUUSD and BTCUSD with dynamic volatility adjustment.","stats":{}},{"id":5245,"name":"SAL-08 Algorion NASDAQ WallStreet Pro","type":"cBot","seller":"Salileh","url":"https://ctrader.com/products/5245","image":"https://cdn.ctrader.com/image/webp/23a81b87-4dbf-4f69-aed8-0a57d1a205f5_60262","price":1710,"promoPrice":1459,"rating":null,"reviews":0,"market":"Indices","tags":["NASDAQ","Breakout","NY open","Long-only"],"summary":"Quantitative breakout bot for NASDAQ 100 built around the New York cash open.","stats":{}},{"id":5224,"name":"SAL-07 Algorion BTCUSD ORB Pro","type":"cBot","seller":"Salileh","url":"https://ctrader.com/products/5224","image":"https://cdn.ctrader.com/image/webp/8baed624-8211-4caa-a123-4aed22e3ece6_60304","price":1750,"promoPrice":1559,"rating":null,"reviews":0,"market":"Crypto","tags":["BTCUSD","M15","ORB","Breakout"],"summary":"Session opening-range breakout algorithm for BTCUSD on M15 with a minimum 1:1.6 risk-to-reward.","stats":{"profitFactor":1.23,"maxDrawdown":"14.2%"}},{"id":5213,"name":"SAL-06 Algorion Gold ORB Pro","type":"cBot","seller":"Salileh","url":"https://ctrader.com/products/5213","image":"https://cdn.ctrader.com/image/webp/46988798-28cc-4af4-bf11-af62d962b3b3_60271","price":1750,"promoPrice":1559,"rating":null,"reviews":0,"market":"Gold","tags":["XAUUSD","M15","ORB","Prop firm fit"],"summary":"Opening-range breakout system for Gold on M15: one trade per day, fully automated.","stats":{}},{"id":5041,"name":"GOLDMAN PROP MASTER PRO","type":"cBot","seller":"VinAlgo","url":"https://ctrader.com/products/5041","image":"https://cdn.ctrader.com/image/webp/6111d72e-ce18-4aaf-8647-259967e579d1_56470","price":299,"promoPrice":199,"rating":4.0,"reviews":1,"market":"Gold","tags":["XAUUSD","Mean reversion","Prop firm fit","Daily loss limit"],"summary":"Gold mean-reversion bot tuned for prop-firm and funded accounts, with daily loss limits.","stats":{}},{"id":5002,"name":"CS Apex Hunter Pro","type":"cBot","seller":"CapitalSol_Trading","url":"https://ctrader.com/products/5002","image":"https://cdn.ctrader.com/image/webp/3d0a4883-da32-492c-85ac-c98ba922c744_56271","price":900,"promoPrice":499,"rating":null,"reviews":0,"market":"Multi-asset","tags":["Supply & demand","ATR","EMA","Day trading"],"summary":"Rule-based execution on institutional supply and demand zones with ATR volatility and EMA trend filters.","stats":{}}]}</script>
+
+<script>
+(function () {
+  const params = new URLSearchParams(location.search);
+  const root = document.documentElement;
+
+  // ?theme=light|dark|auto (default auto = follow the visitor's OS)
+  const theme = params.get('theme');
+  if (theme === 'light' || theme === 'dark') root.setAttribute('data-theme', theme);
+  // ?transparent=1  → no page background, so the widget blends into the host site
+  if (params.get('transparent') === '1') root.setAttribute('data-transparent', '1');
+
+  const layout = params.get('layout') === 'list' ? 'list' : 'grid';
+  const limit = parseInt(params.get('limit') || '0', 10) || 0;
+  const presetMarket = params.get('market') || 'All';
+  const hideHeader = params.get('header') === '0';
+  const hideControls = params.get('controls') === '0';
+
+  const $ = (s) => document.querySelector(s);
+  const grid = $('#grid'), chips = $('#chips'), q = $('#q'), sortSel = $('#sort');
+  grid.dataset.layout = layout;
+  if (hideHeader) $('.head').style.display = 'none';
+  if (hideControls) { $('.controls').style.display = 'none'; chips.style.display = 'none'; }
+
+  let data = null, market = presetMarket, query = '', sort = params.get('sort') || 'featured';
+  sortSel.value = sort;
+
+  async function load() {
+    try {
+      const r = await fetch('products.json', { cache: 'no-cache' });
+      if (!r.ok) throw new Error(r.status);
+      data = await r.json();
+    } catch (e) {
+      data = JSON.parse(document.getElementById('products-data').textContent);
+    }
+    render();
+  }
+
+  const initials = (n) => n.replace(/[^A-Za-z0-9 ]/g, ' ').trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const money = (n, cur) => n === 0 ? 'Free' : (cur === 'USD' ? '$' : cur + ' ') + n.toLocaleString('en-US');
+
+  function stars(r) {
+    if (r == null) return '';
+    let out = '<span class="stars" aria-hidden="true">';
+    for (let i = 1; i <= 5; i++) {
+      const fill = r >= i - 0.25 ? 1 : (r >= i - 0.75 ? 0.5 : 0);
+      out += '<svg viewBox="0 0 20 20" class="' + (fill ? '' : 'off') + '">'
+        + (fill === 0.5 ? '<defs><linearGradient id="h' + i + '"><stop offset="50%" stop-color="currentColor"/><stop offset="50%" stop-color="transparent"/></linearGradient></defs>' : '')
+        + '<path fill="' + (fill === 0.5 ? 'url(#h' + i + ')' : 'currentColor') + '" stroke="currentColor" stroke-width="1" d="M10 1.8l2.5 5.3 5.8.7-4.3 4 1.1 5.8L10 14.8l-5.1 2.8 1.1-5.8-4.3-4 5.8-.7z"/></svg>';
+    }
+    return out + '</span>';
+  }
+
+  function card(p, cur) {
+    const promo = p.promoPrice != null && p.promoPrice < p.price;
+    const off = promo ? Math.round((1 - p.promoPrice / p.price) * 100) : 0;
+    const price = promo
+      ? '<s>' + money(p.price, cur) + '</s>' + money(p.promoPrice, cur) + '<span class="off">−' + off + '%</span>'
+      : '<span class="' + (p.price === 0 ? 'free' : '') + '">' + money(p.price, cur) + '</span>';
+    const st = p.stats || {};
+    const stats = [
+      st.profitFactor != null ? '<span class="stat">PF <b>' + esc(st.profitFactor) + '</b></span>' : '',
+      st.maxDrawdown ? '<span class="stat">DD <b>' + esc(st.maxDrawdown) + '</b></span>' : ''
+    ].filter(Boolean).join('');
+    const rating = p.rating != null
+      ? stars(p.rating) + '<span><b>' + p.rating.toFixed(1) + '</b> · ' + p.reviews + (p.reviews === 1 ? ' review' : ' reviews') + '</span>'
+      : '<span>New · no reviews yet</span>';
+    return '<article class="card' + (p.featured ? ' featured' : '') + '">'
+      + '<div class="top">'
+      + '<div class="logo" data-initials="' + esc(initials(p.name)) + '"><img src="' + esc(p.image) + '" alt="" loading="lazy" onerror="this.remove()"></div>'
+      + '<div class="title"><h2><a href="' + esc(p.url) + '" target="_blank" rel="noopener">' + esc(p.name) + '</a></h2>'
+      + '<div class="by"><span class="badge">' + esc(p.type) + '</span>by ' + esc(p.seller) + '</div></div>'
+      + '</div>'
+      + '<div class="meta">' + rating + stats + '</div>'
+      + '<p class="summary">' + esc(p.summary) + '</p>'
+      + '<div class="tags">' + (p.tags || []).slice(0, 4).map((t) => '<span class="tag">' + esc(t) + '</span>').join('') + '</div>'
+      + '<div class="bottom"><div class="price">' + price + '</div>'
+      + '<a class="cta" href="' + esc(p.url) + '" target="_blank" rel="noopener">View in Store'
+      + '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 9l6-6M4 3h5v5"/></svg></a></div>'
+      + '</article>';
+  }
+
+  function render() {
+    const cur = data.meta.currency || 'USD';
+    $('#title').textContent = data.meta.title || '';
+    $('#subtitle').textContent = data.meta.subtitle || '';
+    $('#updated').textContent = data.meta.updated || '';
+    document.title = data.meta.title || document.title;
+
+    // chips
+    const counts = {};
+    data.products.forEach((p) => { counts[p.market] = (counts[p.market] || 0) + 1; });
+    const markets = ['All', ...Object.keys(counts).sort()];
+    chips.innerHTML = markets.map((m) =>
+      '<button class="chip" type="button" data-m="' + esc(m) + '" aria-pressed="' + (m === market) + '">' + esc(m)
+      + '<span class="n">' + (m === 'All' ? data.products.length : counts[m]) + '</span></button>').join('');
+
+    // filter + sort
+    const needle = query.trim().toLowerCase();
+    let list = data.products.filter((p) =>
+      (market === 'All' || p.market === market) &&
+      (!needle || [p.name, p.seller, p.summary, p.market, ...(p.tags || [])].join(' ').toLowerCase().includes(needle)));
+    const eff = (p) => (p.promoPrice != null ? p.promoPrice : p.price);
+    const sorters = {
+      featured: (a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0) || (b.rating || 0) - (a.rating || 0),
+      rating: (a, b) => (b.rating || 0) - (a.rating || 0) || b.reviews - a.reviews,
+      'price-asc': (a, b) => eff(a) - eff(b),
+      'price-desc': (a, b) => eff(b) - eff(a),
+      name: (a, b) => a.name.localeCompare(b.name)
+    };
+    list.sort(sorters[sort] || sorters.featured);
+    if (limit) list = list.slice(0, limit);
+
+    grid.innerHTML = list.length ? list.map((p) => card(p, cur)).join('') : '<div class="empty">No bots match — try another search.</div>';
+    $('#count').textContent = list.length + ' of ' + data.products.length + ' bots';
+    postHeight();
+  }
+
+  chips.addEventListener('click', (e) => {
+    const b = e.target.closest('.chip'); if (!b) return;
+    market = b.dataset.m; render();
+  });
+  q.addEventListener('input', () => { query = q.value; render(); });
+  sortSel.addEventListener('change', () => { sort = sortSel.value; render(); });
+
+  // Tell the host page our height so the iframe can resize (see README)
+  function postHeight() {
+    if (window.parent === window) return;
+    const h = document.documentElement.scrollHeight;
+    window.parent.postMessage({ type: 'ctrader-widget:height', height: h }, '*');
+  }
+  new ResizeObserver(postHeight).observe(document.body);
+
+  load();
+})();
+</script>
+</body>
+</html>
