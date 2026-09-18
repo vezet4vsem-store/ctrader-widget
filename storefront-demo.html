@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Storefront Widget Demo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{--bg:#ffffff;--surface:#f4f6f9;--line:#d9dfe8;--text:#14202e;--muted:#5d6b7e;--accent:#0b5fa5;--code:#0f1520;--code-text:#e8edf4;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1520;--surface:#171f2b;--line:#2b3646;--text:#e8edf4;--muted:#94a2b5;--accent:#6cb0f6;--code:#0a0f17;--code-text:#e8edf4;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1520;--surface:#171f2b;--line:#2b3646;--text:#e8edf4;--muted:#94a2b5;--accent:#6cb0f6;--code:#0a0f17;--code-text:#e8edf4;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"IBM Plex Sans","Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.5}
+.wrap{max-width:1040px;margin:0 auto;padding:32px 20px 56px}
+header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px 20px;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:26px}
+h1{font-size:22px;font-weight:600;margin:0;text-wrap:balance}
+header p{margin:0;color:var(--muted)}
+.mock{border:1px dashed var(--line);border-radius:12px;padding:22px;background:var(--surface);margin-bottom:28px}
+.mock .label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:10px}
+.mock h2{font-size:18px;margin:0 0 4px;font-weight:600}
+.mock .sub{color:var(--muted);margin:0 0 18px}
+.frame{background:var(--bg);border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+iframe{display:block;width:100%;border:0;min-height:320px}
+.powered{margin:10px 0 0;font-size:12px;color:var(--muted);text-align:right}
+h3{font-size:15px;font-weight:600;margin:0 0 8px}
+p.note{color:var(--muted);margin:0 0 12px}
+.code{position:relative;background:var(--code);color:var(--code-text);border-radius:10px;padding:16px 16px 16px;overflow-x:auto;font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.55;white-space:pre}
+button.copy{position:absolute;top:10px;right:10px;background:var(--accent);color:#fff;border:0;border-radius:6px;padding:6px 10px;font:inherit;font-family:"IBM Plex Sans",sans-serif;font-size:12.5px;font-weight:600;cursor:pointer}
+button.copy:focus-visible{outline:2px solid #fff}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>cTrader Store widget — live embed</h1>
+    <p>Widget ID <code>gnwobmz2</code> · served from storefront.ctrader.com</p>
+  </header>
+
+  <section class="mock">
+    <div class="label">Example partner page</div>
+    <h2>Run cTrader bots 24/7 on your VPS</h2>
+    <p class="sub">Popular tools to run on your cTrader VPS — the block below is the embedded widget, exactly as a partner would see it.</p>
+    <div class="frame">
+      <iframe id="ctw-gnwobmz2" src="https://storefront.ctrader.com/embed/gnwobmz2" style="width:100%;border:0;min-height:320px" loading="lazy" title="cTrader Store widget"></iframe>
+    </div>
+    <p class="powered">Powered by cTrader Store</p>
+  </section>
+
+  <h3>Embed code</h3>
+  <p class="note">Paste anywhere on a page. The script keeps the iframe height in sync with the widget content.</p>
+  <div class="code"><button class="copy" id="copy" type="button">Copy</button><span id="snippet">&lt;iframe id="ctw-gnwobmz2" src="https://storefront.ctrader.com/embed/gnwobmz2" style="width:100%;border:0;min-height:320px" loading="lazy"&gt;&lt;/iframe&gt;
+&lt;script&gt;(function(){var f=document.getElementById("ctw-gnwobmz2");window.addEventListener('message',function(e){if(!f||e.source!==f.contentWindow)return;var d=e.data;if(d&amp;&amp;d.type==='ctrader-widget:height'&amp;&amp;d.height&gt;0){f.style.height=Math.ceil(d.height)+'px';}});})();&lt;/script&gt;</span></div>
+</div>
+
+<script>
+(function(){
+  var f=document.getElementById("ctw-gnwobmz2");
+  window.addEventListener('message',function(e){
+    if(!f||e.source!==f.contentWindow)return;
+    var d=e.data;
+    if(d&&d.type==='ctrader-widget:height'&&d.height>0){f.style.height=Math.ceil(d.height)+'px';}
+  });
+  var b=document.getElementById('copy');
+  b.addEventListener('click',function(){
+    var t=document.getElementById('snippet').textContent;
+    (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){b.textContent='Copied';setTimeout(function(){b.textContent='Copy'},1500)},function(){b.textContent='Select & copy manually'});
+  });
+})();
+</script>
+</body>
+</html>
